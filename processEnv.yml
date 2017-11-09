@@ -1,0 +1,11 @@
+ENVIRONMENT: test
+JOURNEY_TRACKER_API_ENDPOINT: https://yefnetby89.execute-api.eu-west-2.amazonaws.com/test
+LOCAL_PROJECT_FOLDER_AFTER_ALL_BUILD_STEPS: ./build
+LOCAL_PROJECT_TO_BUILD_ROOT_FOLDER: ./abs_station
+LOCAL_PROJECT_TO_BUILD_SOURCE_FOLDER: ./source
+LOCAL_ROOT_FOLDER: /var/task/
+LOCAL_TMP_FOLDER: /tmp/
+LOGGER_ENDPOINT: https://zdf0gabz7c.execute-api.eu-west-2.amazonaws.com/test
+REMOTE_CORE_ENGINE_FILE_NAME: core_engine_builder_station.tar
+REMOTE_EXTEND_CSS_FILE_NAME: choco_extend_css.json
+REMOTE_FILE_TO_DOWNLOAD_FILE_NAME: abs_station.tar
