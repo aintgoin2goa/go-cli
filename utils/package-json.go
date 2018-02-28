@@ -9,7 +9,8 @@ import (
 
 // PackageJSON representation of the package.json file
 type PackageJSON struct {
-	Name string
+	Name    string
+	Version string
 }
 
 // LoadPackageJSON loads the package.json file as a string

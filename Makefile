@@ -1,4 +1,7 @@
+.PHONY: test
 
 build:
-	go build -o dazn
+	go build -o tube
 
+test:
+	go test -v ./...

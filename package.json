@@ -1,5 +1,5 @@
 {
-  "name": "dazn-team-frontend-lambda-tube-core-engine-builder",
+  "name": "lambda-dazn-tube-core-engine-builder",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",

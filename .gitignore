@@ -14,3 +14,7 @@
 .glide/
 
 dazn
+
+.vscode
+
+test/result
