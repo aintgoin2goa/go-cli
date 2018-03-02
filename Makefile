@@ -8,7 +8,7 @@ build:
 	go build -o tube
 
 build-all:
-	gox -output="bin/tube_{{.OS}}_{{.Arch}}"  -os="darwin" -arch="amd64"
+	gox -output="bin/tube_{{.OS}}_{{.Arch}}"  -os="darwin linux" -arch="amd64"
 
 clean:
 	rm -rf bin/
