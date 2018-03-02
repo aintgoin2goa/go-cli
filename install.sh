@@ -20,3 +20,6 @@ done
 curl -L $url -o tube
 mv ./tube /usr/local/bin/tube
 chmod u+x /usr/local/bin/tube
+
+echo "Installed!
+tube --version
