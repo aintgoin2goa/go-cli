@@ -61,6 +61,14 @@ func main() {
 					Value: "production",
 					Usage: "comma-seperated list of environment suffixes",
 				},
+				cli.BoolFlag{
+					Name:  "arn",
+					Usage: "display only the arn",
+				},
+				cli.BoolFlag{
+					Name:  "version",
+					Usage: "display only the version",
+				},
 			},
 			Action: commands.Info,
 		},

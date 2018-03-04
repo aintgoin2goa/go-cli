@@ -11,6 +11,8 @@ import (
 func Info(c *cli.Context) {
 	app := c.String("app")
 	environment := c.String("environment")
+	arn := c.Bool("arn")
+	version := c.Bool("version")
 
 	var environments []string
 	allEnvironments := []string{"testing", "staging", "production"}
@@ -29,13 +31,19 @@ func Info(c *cli.Context) {
 	}
 
 	for _, info := range infos {
-		fmt.Print("=============================\n")
-		fmt.Printf("%s\n", info.Name)
-		fmt.Printf("%s\n", info.Description)
-		fmt.Printf("%s:\t\t%s\n", "ARN", info.Arn)
-		fmt.Printf("%s:\t%s\n", "Version", info.Version)
-		fmt.Printf("%s:\t%dMB\n", "Package Size", info.CodePackageSize/1e6)
-		fmt.Printf("%s:\t%s\n", "Handler", info.Handler)
-		fmt.Print("=============================\n\n")
+		if arn == true {
+			fmt.Print(info.Arn)
+		} else if version == true {
+			fmt.Print(info.Version)
+		} else {
+			fmt.Print("=============================\n")
+			fmt.Printf("%s\n", info.Name)
+			fmt.Printf("%s\n", info.Description)
+			fmt.Printf("%s:\t\t%s\n", "ARN", info.Arn)
+			fmt.Printf("%s:\t%s\n", "Version", info.Version)
+			fmt.Printf("%s:\t%dMB\n", "Package Size", info.CodePackageSize/1e6)
+			fmt.Printf("%s:\t%s\n", "Handler", info.Handler)
+			fmt.Print("=============================\n\n")
+		}
 	}
 }
