@@ -32,9 +32,9 @@ func Info(c *cli.Context) {
 
 	for _, info := range infos {
 		if arn == true {
-			fmt.Print(info.Arn)
+			fmt.Print(info.Arn + "  ")
 		} else if version == true {
-			fmt.Print(info.Version)
+			fmt.Print(info.Version + "  ")
 		} else {
 			fmt.Print("=============================\n")
 			fmt.Printf("%s\n", info.Name)
