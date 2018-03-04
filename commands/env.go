@@ -45,7 +45,7 @@ func printVars(vars []byte) {
 	fmt.Print(s)
 }
 
-func Env(c *cli.Context) error {
+func Env(c *cli.Context) {
 	lambda := c.String("lambda")
 	bucket := c.String("bucket")
 	key := c.String("key")
@@ -75,6 +75,4 @@ func Env(c *cli.Context) error {
 	} else {
 		ioutil.WriteFile(output, formattedVariables, 0644)
 	}
-
-	return nil
 }

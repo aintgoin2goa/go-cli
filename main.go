@@ -12,10 +12,12 @@ func main() {
 	app.Name = "tube"
 	app.Usage = "DAZN Tube cli tools"
 	app.Version = "0.0.4"
+
 	app.Commands = []cli.Command{
 		{
-			Name:  "env",
-			Usage: "Gets env var from a lambda function configuration or S3 bucket. Writes result in given format to stdout",
+			Name:      "env",
+			Usage:     "Gets env var from a lambda function configuration or S3 bucket. Writes result in given format to stdout",
+			UsageText: "If no lambda or bucket given, will attempt to read the package.json and guess",
 			Flags: []cli.Flag{
 				cli.StringFlag{
 					Name:  "lambda, l",
@@ -44,6 +46,23 @@ func main() {
 				},
 			},
 			Action: commands.Env,
+		},
+		{
+			Name:  "info",
+			Usage: "get info about a running lambda",
+			Flags: []cli.Flag{
+				cli.StringFlag{
+					Name:  "app, a",
+					Value: "",
+					Usage: "full name of lambda without environment suffix, or shortname",
+				},
+				cli.StringFlag{
+					Name:  "environment, e",
+					Value: "production",
+					Usage: "comma-seperated list of environment suffixes",
+				},
+			},
+			Action: commands.Info,
 		},
 	}
 

@@ -5,8 +5,10 @@ import (
 	"testing"
 )
 
+var function = "lambda-dazn-tube-core-engine-builder-testing"
+
 func TestGetLambdaEnvironmentVariables(t *testing.T) {
-	result := GetLambdaEnvironmentVariables("dazn-team-frontend-lambda-tube-core-engine-builder-test")
+	result := GetLambdaEnvironmentVariables(function)
 
 	if reflect.ValueOf(result).Kind() != reflect.Map {
 		t.Error("result is not a map")
@@ -20,5 +22,13 @@ func TestGetLambdaEnvironmentVariables(t *testing.T) {
 
 	if environment != "test" {
 		t.Error("ENVIRONMENT is " + environment + " instead of 'test'")
+	}
+}
+
+func TestGetFunctionInfo(t *testing.T) {
+	result := GetFunctionInfo(function)
+
+	if result.Name != function {
+		t.Error("Did not get expected info")
 	}
 }
