@@ -8,6 +8,14 @@ import (
 	"github.com/urfave/cli"
 )
 
+func printSingleValue(value string, app string, environment string, appName string) {
+	if app == "all" || environment == "all" {
+		fmt.Printf("%s=%s\n", appName, value)
+	} else {
+		fmt.Printf("%s\n", value)
+	}
+}
+
 func Info(c *cli.Context) {
 	app := c.String("app")
 	environment := c.String("environment")
@@ -30,11 +38,11 @@ func Info(c *cli.Context) {
 		infos = append(infos, aws.GetFunctionInfo(name))
 	}
 
-	for _, info := range infos {
+	for index, info := range infos {
 		if arn == true {
-			fmt.Print(info.Arn + "  ")
+			printSingleValue(info.Arn, app, environment, appNames[index])
 		} else if version == true {
-			fmt.Print(info.Version + "  ")
+			printSingleValue(info.Version, app, environment, appNames[index])
 		} else {
 			fmt.Print("=============================\n")
 			fmt.Printf("%s\n", info.Name)
