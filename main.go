@@ -72,6 +72,23 @@ func main() {
 			},
 			Action: commands.Info,
 		},
+		{
+			Name:  "logs",
+			Usage: "Gets logs for the last invocation of a lambda",
+			Flags: []cli.Flag{
+				cli.StringFlag{
+					Name:  "app, a",
+					Value: "",
+					Usage: "full name of a lambda, or shortname",
+				},
+				cli.StringFlag{
+					Name:  "environment, e",
+					Value: "production",
+					Usage: "environment to get logs for",
+				},
+			},
+			Action: commands.Logs,
+		},
 	}
 
 	app.Run(os.Args)
