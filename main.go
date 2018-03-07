@@ -11,7 +11,7 @@ func main() {
 	app := cli.NewApp()
 	app.Name = "tube"
 	app.Usage = "DAZN Tube cli tools"
-	app.Version = "0.2.1"
+	app.Version = "0.2.2"
 
 	app.Commands = []cli.Command{
 		{
@@ -68,6 +68,10 @@ func main() {
 				cli.BoolFlag{
 					Name:  "version",
 					Usage: "display only the version",
+				},
+				cli.BoolFlag{
+					Name:  "name",
+					Usage: "display only the function name",
 				},
 			},
 			Action: commands.Info,
