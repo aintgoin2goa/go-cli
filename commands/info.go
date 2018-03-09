@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"go-cli/aws"
 	"go-cli/utils"
+	"log"
+	"strings"
 
 	"github.com/urfave/cli"
 )
@@ -33,6 +35,7 @@ func Info(c *cli.Context) {
 	arn := c.Bool("arn")
 	version := c.Bool("version")
 	name := c.Bool("name")
+	terraform := c.Bool("terraform")
 
 	var environments []string
 	allEnvironments := []string{"testing", "staging", "production"}
@@ -44,17 +47,27 @@ func Info(c *cli.Context) {
 	}
 
 	appNames := utils.ResolveAppNames(app, environments)
-	infos := []aws.FunctionInfo{}
+	infoChannel := make(chan aws.FunctionInfo, len(appNames))
+	var infos []aws.FunctionInfo
 
 	for _, name := range appNames {
-		infos = append(infos, aws.GetFunctionInfo(name))
+		go func(name string) { infoChannel <- aws.GetFunctionInfo(name) }(name)
+		infos = append(infos, <-infoChannel)
 	}
 
 	isAll := (app == "all" || environment == "all")
 
 	for index, info := range infos {
 		currentApp := appNames[index]
-		if arn == true {
+		currentAppParts := strings.Split(currentApp, "-")
+		currentAppWithoutEnv := strings.Join(currentAppParts[:len(currentAppParts)-1], "-")
+		if terraform == true {
+			err, appName := utils.ResolveTerraformName(currentAppWithoutEnv)
+			if err != nil {
+				log.Fatal(err)
+			}
+			printSingleValue(info.Version, true, appName)
+		} else if arn == true {
 			printSingleValue(info.Arn, isAll, currentApp)
 		} else if version == true {
 			printSingleValue(info.Version, isAll, currentApp)

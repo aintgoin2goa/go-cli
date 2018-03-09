@@ -1,5 +1,9 @@
 package utils
 
+import (
+	"errors"
+)
+
 var shortNameMap = map[string]string{
 	"choco":     "lambda-dazn-tube-choco-multiplier",
 	"builder":   "lambda-dazn-tube-core-engine-builder",
@@ -35,4 +39,14 @@ func ResolveAppNames(app string, environments []string) []string {
 	}
 
 	return appNames
+}
+
+func GetShortName(appName string) (error, string) {
+	for shortName, fullName := range shortNameMap {
+		if fullName == appName {
+			return nil, shortName
+		}
+	}
+
+	return errors.New("Did not find name " + appName), ""
 }

@@ -11,7 +11,7 @@ func main() {
 	app := cli.NewApp()
 	app.Name = "tube"
 	app.Usage = "DAZN Tube cli tools"
-	app.Version = "0.2.2"
+	app.Version = "0.2.3"
 
 	app.Commands = []cli.Command{
 		{
@@ -72,6 +72,10 @@ func main() {
 				cli.BoolFlag{
 					Name:  "name",
 					Usage: "display only the function name",
+				},
+				cli.BoolFlag{
+					Name:  "terraform, t",
+					Usage: "prints out the version, in the format used for terraform",
 				},
 			},
 			Action: commands.Info,
