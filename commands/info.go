@@ -10,6 +10,10 @@ import (
 	"github.com/urfave/cli"
 )
 
+func printTerraformValue(value string, name string) {
+	fmt.Printf("-var \"%s=%s\" \\\n", name, value)
+}
+
 func printSingleValue(value string, isAll bool, appName string) {
 	if isAll && appName != value {
 		fmt.Printf("%s=%s\n", appName, value)
@@ -36,6 +40,9 @@ func Info(c *cli.Context) {
 	version := c.Bool("version")
 	name := c.Bool("name")
 	terraform := c.Bool("terraform")
+	if terraform {
+		app = "all"
+	}
 
 	var environments []string
 	allEnvironments := []string{"testing", "staging", "production"}
@@ -66,7 +73,7 @@ func Info(c *cli.Context) {
 			if err != nil {
 				log.Fatal(err)
 			}
-			printSingleValue(info.Version, true, appName)
+			printTerraformValue(info.Version, appName)
 		} else if arn == true {
 			printSingleValue(info.Arn, isAll, currentApp)
 		} else if version == true {
