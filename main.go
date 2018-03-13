@@ -11,7 +11,7 @@ func main() {
 	app := cli.NewApp()
 	app.Name = "tube"
 	app.Usage = "DAZN Tube cli tools"
-	app.Version = "0.2.4"
+	app.Version = "0.2.5"
 
 	app.Commands = []cli.Command{
 		{
@@ -93,6 +93,11 @@ func main() {
 					Name:  "environment, e",
 					Value: "production",
 					Usage: "environment to get logs for",
+				},
+				cli.StringFlag{
+					Name:  "page, p",
+					Value: "1",
+					Usage: "Page of logs to get (1 - most recent, 2 - next most recent etc)",
 				},
 			},
 			Action: commands.Logs,

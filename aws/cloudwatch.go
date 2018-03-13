@@ -81,13 +81,13 @@ func GetLogsForStream(functionName string, streamName string) ([]LogEntry, error
 	return logs, nil
 }
 
-func GetLogs(functionName string) (LogResult, error) {
+func GetLogs(functionName string, page int) (LogResult, error) {
 	streams, err := GetLogStreamsForLambda(functionName)
 	var result LogResult
 	if err != nil {
 		return result, err
 	}
-	stream := streams[0]
+	stream := streams[page-1]
 	logs, err := GetLogsForStream(functionName, stream)
 	if err != nil {
 		return result, err

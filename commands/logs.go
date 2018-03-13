@@ -5,6 +5,7 @@ import (
 	"go-cli/aws"
 	"go-cli/utils"
 	"log"
+	"strconv"
 
 	"github.com/fatih/color"
 	"github.com/urfave/cli"
@@ -13,11 +14,13 @@ import (
 func Logs(c *cli.Context) {
 	app := c.String("app")
 	environment := []string{c.String("environment")}
+	page, _ := strconv.Atoi(c.String("page"))
+
 	seperator := "=================================================================================================="
 
 	appNames := utils.ResolveAppNames(app, environment)
 	functionName := appNames[0]
-	logResult, err := aws.GetLogs(functionName)
+	logResult, err := aws.GetLogs(functionName, page)
 	if err != nil {
 		log.Fatal(err)
 	}
