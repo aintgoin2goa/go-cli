@@ -27,7 +27,10 @@ func envSourceResolver(lambda string, bucket string, key string) envSource {
 		}
 	}
 
-	packageJSON := utils.LoadPackageJSON("")
+	packageJSON, loadPackageJsonError := utils.LoadPackageJSON("")
+	if loadPackageJsonError != nil {
+		log.Fatal("Failed to load package.json", loadPackageJsonError)
+	}
 	name := packageJSON.Name
 	if strings.Contains(name, "lambda") {
 		return func() map[string]string {

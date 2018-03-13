@@ -5,7 +5,7 @@ install:
 	pipenv install
 
 build:
-	go build -o tube
+	go build -o test/tube
 
 build-all:
 	gox -output="bin/tube_{{.OS}}_{{.Arch}}"  -os="darwin linux" -arch="amd64"

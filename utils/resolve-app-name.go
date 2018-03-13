@@ -2,6 +2,7 @@ package utils
 
 import (
 	"errors"
+	"log"
 )
 
 var shortNameMap = map[string]string{
@@ -28,7 +29,10 @@ func ResolveAppNames(app string, environments []string) []string {
 	}
 
 	if app == "" {
-		packageJson := LoadPackageJSON("")
+		packageJson, loadPackageJsonError := LoadPackageJSON("")
+		if loadPackageJsonError != nil {
+			log.Fatal("Failed to load package.json", loadPackageJsonError)
+		}
 		app = packageJson.Name
 	} else if val, ok := shortNameMap[app]; ok {
 		app = val

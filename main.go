@@ -11,7 +11,7 @@ func main() {
 	app := cli.NewApp()
 	app.Name = "tube"
 	app.Usage = "DAZN Tube cli tools"
-	app.Version = "0.2.5"
+	app.Version = "0.3.1"
 
 	app.Commands = []cli.Command{
 		{
@@ -101,6 +101,33 @@ func main() {
 				},
 			},
 			Action: commands.Logs,
+		},
+		{
+			Name:  "build",
+			Usage: "builds an artifact from local src, enabling manual deployments for testing purposes",
+			Flags: []cli.Flag{
+				cli.StringFlag{
+					Name:  "src",
+					Usage: "name of the directory containing source code",
+					Value: "src",
+				},
+				cli.StringFlag{
+					Name:  "temp",
+					Usage: "name of the temporary directory",
+					Value: "temp",
+				},
+				cli.StringFlag{
+					Name:  "output, o",
+					Usage: "name of the output file",
+					Value: "deploymentPackage.zip",
+				},
+				cli.StringFlag{
+					Name:  "exclude, x",
+					Usage: "exclude files matching this pattern",
+					Value: ".test.js",
+				},
+			},
+			Action: commands.Build,
 		},
 	}
 

@@ -6,15 +6,13 @@ import (
 	"io/ioutil"
 	"os"
 	"path/filepath"
+	"regexp"
 )
 
-func CreateDirectory(name string, path string) {
-	if path == "" {
-		path, _ = os.Getwd()
-	}
-
-	fullPath := filepath.Join(path, name)
-	os.Mkdir(fullPath, 0755)
+func CreateDirectory(path string) (bool, error) {
+	err := os.Mkdir(path, 0755)
+	success := (err == nil)
+	return success, err
 }
 
 func CreateFile(name, path string) *os.File {
@@ -63,7 +61,7 @@ func CopyFile(srcFilePath, destFilePath string) error {
 		return destError
 	}
 
-	_, copyError := io.Copy(src, dest)
+	_, copyError := io.Copy(dest, src)
 	if copyError != nil {
 		return copyError
 	}
@@ -74,7 +72,7 @@ func CopyFile(srcFilePath, destFilePath string) error {
 	return nil
 }
 
-func CopyDirectory(srcDirPath, destDirPath string, recursive bool) error {
+func CopyDirectory(srcDirPath, destDirPath string, recursive bool, excludePattern string) error {
 	stats, statsError := os.Stat(srcDirPath)
 	if statsError != nil {
 		return statsError
@@ -96,7 +94,12 @@ func CopyDirectory(srcDirPath, destDirPath string, recursive bool) error {
 		dest := filepath.Join(destDirPath, name)
 		if info.IsDir() {
 			if recursive {
-				CopyDirectory(src, dest, recursive)
+				CopyDirectory(src, dest, recursive, excludePattern)
+			}
+		} else if excludePattern != "" {
+			match, _ := regexp.MatchString(excludePattern, src)
+			if !match {
+				CopyFile(src, dest)
 			}
 		} else {
 			CopyFile(src, dest)
