@@ -99,6 +99,10 @@ func main() {
 					Value: "1",
 					Usage: "Page of logs to get (1 - most recent, 2 - next most recent etc)",
 				},
+				cli.BoolFlag{
+					Name:  "interactive, i",
+					Usage: "Interactive mode - allows navigation between logs",
+				},
 			},
 			Action: commands.Logs,
 		},

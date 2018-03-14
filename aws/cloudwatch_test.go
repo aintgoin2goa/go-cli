@@ -30,3 +30,15 @@ func TestGetLogsForStream(t *testing.T) {
 
 	fmt.Print(result)
 }
+
+func TestGetLogs(t *testing.T) {
+	funcName := "lambda-dazn-tube-choco-multiplier-testing"
+	page := 50
+	logResult, err := GetLogs(funcName, page)
+
+	if err != nil {
+		t.Error(err)
+	}
+
+	fmt.Printf("%+v\n", logResult)
+}

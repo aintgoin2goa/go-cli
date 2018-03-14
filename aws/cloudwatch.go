@@ -15,8 +15,12 @@ type LogEntry struct {
 }
 
 type LogResult struct {
-	Stream string
-	Logs   []LogEntry
+	Stream      string
+	Page        int
+	TotalPages  int
+	Logs        []LogEntry
+	IsFirstPage bool
+	IsLastPage  bool
 }
 
 func GetLogStreamsForLambda(functionName string) ([]string, error) {
@@ -95,5 +99,9 @@ func GetLogs(functionName string, page int) (LogResult, error) {
 
 	result.Stream = stream
 	result.Logs = logs
+	result.Page = page
+	result.TotalPages = len(streams)
+	result.IsFirstPage = page == 1
+	result.IsLastPage = page == result.TotalPages
 	return result, nil
 }
