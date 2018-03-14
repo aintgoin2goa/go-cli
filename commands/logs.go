@@ -47,5 +47,13 @@ func Logs(c *cli.Context) {
 
 	if interactive {
 		scanner := bufio.NewScanner(os.Stdin)
+		var options = []string
+		if !logResult.IsFirstPage {
+			options = append(options, "[P] Previous page")
+		}
+
+		if !logResult.IsLastPage {
+			options = append(options, "[N]")
+		}
 	}
 }
