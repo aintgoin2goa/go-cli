@@ -12,7 +12,7 @@ func TestLoadPackageJson(t *testing.T) {
 	expectedName := "dazn-team-frontend-lambda-tube-core-engine-builder"
 	expectedVersion := "1.0.0"
 
-	result := LoadPackageJSON(basePath)
+	result, _ := LoadPackageJSON(basePath)
 
 	if result.Name != expectedName {
 		t.Error("expected name to be test-package-name.  Found: " + result.Name)
