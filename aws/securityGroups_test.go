@@ -33,8 +33,19 @@ func TestAddIngressIp(t *testing.T) {
 	region := "eu-west-1"
 	protocol := "http"
 	ip := "82.173.135.22"
-	name := "Paul Wilson TEST"
-	err := AddIngressIp(securityGroupId, region, protocol, ip, name)
+	name := "Paul Wilson"
+	err := AddIngressIp(securityGroupId, region, protocol, ip, name, 1)
+	if err != nil {
+		t.Error(err)
+	}
+}
+
+func TestRemoveIngressRule(t *testing.T) {
+	securityGroupId := "sg-56b8c42f"
+	region := "eu-west-1"
+	protocol := "http"
+	ip := "82.173.135.22"
+	err := RemoveIngressRule(securityGroupId, region, protocol, ip)
 	if err != nil {
 		t.Error(err)
 	}

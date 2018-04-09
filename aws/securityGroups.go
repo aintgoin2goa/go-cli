@@ -3,6 +3,7 @@ package aws
 import (
 	"errors"
 	"net"
+	"time"
 
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
@@ -13,6 +14,8 @@ type IpRecord struct {
 	Ip          string
 	Description string
 }
+
+const timeFormat = time.RFC822
 
 func createIpRecords(ranges []*ec2.IpRange) []IpRecord {
 	var records []IpRecord
@@ -50,11 +53,31 @@ func portForProtocol(protocol string) int64 {
 	}
 }
 
-func GetSecurityGroup(groupId, region string) (*ec2.SecurityGroup, error) {
+func getService(region string) *ec2.EC2 {
 	sess := session.Must(session.NewSessionWithOptions(session.Options{
 		SharedConfigState: session.SharedConfigEnable,
 	}))
 	svc := ec2.New(sess, &aws.Config{Region: aws.String(region)})
+	return svc
+}
+
+func getIpAsCidr(ipString string) (string, error) {
+	ip := net.ParseIP(ipString)
+	if ip == nil {
+		return "", errors.New("Invalid IP")
+	}
+	var cidrIp string
+	if ip.To4 != nil {
+		cidrIp = ip.String() + "/32"
+	} else {
+		cidrIp = ip.String()
+	}
+
+	return cidrIp, nil
+}
+
+func GetSecurityGroup(groupId, region string) (*ec2.SecurityGroup, error) {
+	svc := getService(region)
 	input := &ec2.DescribeSecurityGroupsInput{
 		GroupIds: []*string{aws.String(groupId)},
 	}
@@ -82,33 +105,71 @@ func GetIngressIps(groupId string, region string, protocol string) ([]IpRecord, 
 	return nil, errors.New("Failed to find any ips matching that protocol")
 }
 
-func AddIngressIp(groupId string, region string, protocol string, ipString string, name string) error {
-	sess := session.Must(session.NewSessionWithOptions(session.Options{
-		SharedConfigState: session.SharedConfigEnable,
-	}))
-	ip := net.ParseIP(ipString)
-	if ip == nil {
-		return errors.New("Invalid IP")
+func AddIngressIp(groupId string, region string, protocol string, ipString string, name string, expiryInDays int) error {
+	svc := getService(region)
+	cidrIp, ipErr := getIpAsCidr(ipString)
+	if ipErr != nil {
+		return ipErr
 	}
-	var cidrIp string
-	if ip.To4 != nil {
-		cidrIp = ip.String() + "/32"
+
+	var timestamp string
+
+	if expiryInDays == 0 {
+		timestamp = ""
 	} else {
-		cidrIp = ip.String()
+		expiry := time.Now().AddDate(0, 0, expiryInDays)
+		timestamp = "[" + expiry.Format(timeFormat) + "]"
 	}
-	svc := ec2.New(sess, &aws.Config{Region: aws.String(region)})
+
 	port := portForProtocol(protocol)
 	input := &ec2.AuthorizeSecurityGroupIngressInput{
-		GroupId:    aws.String(groupId),
-		IpProtocol: aws.String("tcp"),
-		FromPort:   aws.Int64(port),
-		ToPort:     aws.Int64(port),
-		CidrIp:     aws.String(cidrIp),
+		GroupId: aws.String(groupId),
+		IpPermissions: []*ec2.IpPermission{
+			(&ec2.IpPermission{}).
+				SetIpProtocol("tcp").
+				SetFromPort(port).
+				SetToPort(port).
+				SetIpRanges([]*ec2.IpRange{
+					&ec2.IpRange{
+						CidrIp:      aws.String(cidrIp),
+						Description: aws.String(name + " " + timestamp),
+					},
+				}),
+		},
 	}
 
 	_, err := svc.AuthorizeSecurityGroupIngress(input)
 	if err != nil {
 		return err
+	}
+
+	return nil
+}
+
+type CleanOldIngressRulesResult struct {
+	RulesRemoved []string
+	RemovedCount int
+}
+
+func RemoveIngressRule(groupId string, region string, protocol string, ipString string) error {
+	svc := getService(region)
+	cidrIp, err := getIpAsCidr(ipString)
+	if err != nil {
+		return err
+	}
+	port := portForProtocol(protocol)
+	input := &ec2.RevokeSecurityGroupIngressInput{
+		CidrIp:     aws.String(cidrIp),
+		FromPort:   aws.Int64(port),
+		ToPort:     aws.Int64(port),
+		IpProtocol: aws.String("tcp"),
+		GroupId:    aws.String(groupId),
+	}
+
+	_, revokeError := svc.RevokeSecurityGroupIngress(input)
+
+	if revokeError != nil {
+		return revokeError
 	}
 
 	return nil
