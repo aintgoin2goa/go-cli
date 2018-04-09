@@ -14,6 +14,8 @@ import (
 
 type envSource func() map[string]string
 
+const defaultEnv = "district"
+
 func envSourceResolver(lambda string, bucket string, key string) envSource {
 	if lambda != "" && bucket == "" && key == "" {
 		return func() map[string]string {
@@ -34,12 +36,12 @@ func envSourceResolver(lambda string, bucket string, key string) envSource {
 	name := packageJSON.Name
 	if strings.Contains(name, "lambda") {
 		return func() map[string]string {
-			return aws.GetLambdaEnvironmentVariables(name + "-testing")
+			return aws.GetLambdaEnvironmentVariables(name + "-" + defaultEnv)
 		}
 	}
 
 	return func() map[string]string {
-		return aws.GetEnvironmentVariablesFromS3(name+"-env", "testing.json")
+		return aws.GetEnvironmentVariablesFromS3(name+"-env", defaultEnv+".json")
 	}
 }
 

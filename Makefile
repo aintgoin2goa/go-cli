@@ -12,7 +12,7 @@ build-all:
 
 clean:
 	rm -rf bin/
-	rm tube
+	rm test/tube
 
 test:
 	go test -v ./...
