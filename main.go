@@ -11,7 +11,7 @@ func main() {
 	app := cli.NewApp()
 	app.Name = "tube"
 	app.Usage = "DAZN Tube cli tools"
-	app.Version = "0.3.1"
+	app.Version = "0.3.2"
 
 	app.Commands = []cli.Command{
 		{
