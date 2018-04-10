@@ -50,3 +50,14 @@ func TestRemoveIngressRule(t *testing.T) {
 		t.Error(err)
 	}
 }
+
+func TestCleanOldIngressRules(t *testing.T) {
+	securityGroupId := "sg-56b8c42f"
+	region := "eu-west-1"
+	result, err := CleanOldIngressRules(securityGroupId, region)
+	if err != nil {
+		t.Error(err)
+	}
+
+	fmt.Printf("%+v", result)
+}

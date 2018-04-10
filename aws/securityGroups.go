@@ -2,7 +2,9 @@ package aws
 
 import (
 	"errors"
+	"fmt"
 	"net"
+	"regexp"
 	"time"
 
 	"github.com/aws/aws-sdk-go/aws"
@@ -61,7 +63,16 @@ func getService(region string) *ec2.EC2 {
 	return svc
 }
 
+func isCidr(ip string) bool {
+	_, _, err := net.ParseCIDR(ip)
+	return (err == nil)
+}
+
 func getIpAsCidr(ipString string) (string, error) {
+	if isCidr(ipString) {
+		return ipString, nil
+	}
+
 	ip := net.ParseIP(ipString)
 	if ip == nil {
 		return "", errors.New("Invalid IP")
@@ -102,7 +113,7 @@ func GetIngressIps(groupId string, region string, protocol string) ([]IpRecord, 
 		}
 	}
 
-	return nil, errors.New("Failed to find any ips matching that protocol")
+	return []IpRecord{}, nil
 }
 
 func AddIngressIp(groupId string, region string, protocol string, ipString string, name string, expiryInDays int) error {
@@ -118,7 +129,7 @@ func AddIngressIp(groupId string, region string, protocol string, ipString strin
 		timestamp = ""
 	} else {
 		expiry := time.Now().AddDate(0, 0, expiryInDays)
-		timestamp = "[" + expiry.Format(timeFormat) + "]"
+		timestamp = "#[" + expiry.Format(timeFormat) + "]#"
 	}
 
 	port := portForProtocol(protocol)
@@ -147,7 +158,7 @@ func AddIngressIp(groupId string, region string, protocol string, ipString strin
 }
 
 type CleanOldIngressRulesResult struct {
-	RulesRemoved []string
+	RulesRemoved []IpRecord
 	RemovedCount int
 }
 
@@ -166,6 +177,8 @@ func RemoveIngressRule(groupId string, region string, protocol string, ipString 
 		GroupId:    aws.String(groupId),
 	}
 
+	fmt.Printf("RemoveIngressRule %+v", input)
+
 	_, revokeError := svc.RevokeSecurityGroupIngress(input)
 
 	if revokeError != nil {
@@ -173,4 +186,41 @@ func RemoveIngressRule(groupId string, region string, protocol string, ipString 
 	}
 
 	return nil
+}
+
+func CleanOldIngressRules(groupId string, region string) (CleanOldIngressRulesResult, error) {
+	protocols := []string{"http", "https", "ssh"}
+	regex := regexp.MustCompile(`(.+) #\[(.+?)\]#`)
+	result := CleanOldIngressRulesResult{
+		RulesRemoved: []IpRecord{},
+		RemovedCount: 0,
+	}
+	for _, protocol := range protocols {
+		ips, err := GetIngressIps(groupId, region, protocol)
+		if err != nil {
+			return result, err
+		}
+		for _, ip := range ips {
+			matches := regex.FindStringSubmatch(ip.Description)
+			fmt.Printf("Description=%s matches=%v\n", ip.Description, matches)
+			if matches != nil && len(matches) == 3 {
+				expiry, parseError := time.Parse(timeFormat, matches[2])
+				if parseError != nil {
+					return result, parseError
+				}
+
+				if time.Now().After(expiry) {
+					fmt.Printf("Rule has expired\n")
+					err := RemoveIngressRule(groupId, region, protocol, ip.Ip)
+					if err != nil {
+						return result, err
+					}
+					result.RulesRemoved = append(result.RulesRemoved, ip)
+					result.RemovedCount++
+				}
+			}
+		}
+	}
+
+	return result, nil
 }
