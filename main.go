@@ -129,6 +129,49 @@ func main() {
 			},
 			Action: commands.Build,
 		},
+		{
+			Name:  "allow",
+			Usage: "controls ingress rules for allowing access to ABS",
+			Flags: []cli.Flag{
+				cli.BoolFlag{
+					Name:  "jenkins, j",
+					Usage: "Allow jenkins access",
+				},
+				cli.BoolFlag{
+					Name:  "artifactory, a",
+					Usage: "Allow access to artifactory",
+				},
+				cli.BoolFlag{
+					Name:  "clean, c",
+					Usage: "Remove expired ingress rules",
+				},
+				cli.StringFlag{
+					Name:  "ip",
+					Usage: "IP to allow",
+					Value: "current",
+				},
+				cli.StringFlag{
+					Name:  "protocol",
+					Usage: "Which protocol to allow (http|https|ssh)",
+					Value: "https",
+				},
+				cli.StringFlag{
+					Name:  "region",
+					Usage: "The AWS region the security group is on",
+					Value: "eu-west-1",
+				},
+				cli.StringFlag{
+					Name:  "name, n",
+					Usage: "The name of the person or office the ip belongs to",
+				},
+				cli.StringFlag{
+					Name:  "expiry",
+					Usage: "Number of days before the ip can be cleaned",
+					Value: "1",
+				},
+			},
+			Action: commands.Allow,
+		},
 	}
 
 	app.Run(os.Args)

@@ -11,7 +11,7 @@ func TestCreateDirectory(t *testing.T) {
 	path, _ := os.Getwd()
 	dirName := "random-test-dir"
 	expectedPath := filepath.Join(path, dirName)
-	CreateDirectory(dirName, path)
+	CreateDirectory(expectedPath)
 	directoryWasCreated := PathExists(expectedPath)
 
 	if directoryWasCreated {
@@ -47,7 +47,7 @@ func TestDirectoryCopy(t *testing.T) {
 	newFolderPath := filepath.Join(cwd, "newfolder")
 	newSubFolderPath := filepath.Join(newFolderPath, "subfolder")
 	os.MkdirAll(testFolderPath, 0755)
-	err := CopyDirectory(testFolderPath, newSubFolderPath, false)
+	err := CopyDirectory(testFolderPath, newSubFolderPath, false, "")
 	fileWasCopied := PathExists(newFolderPath)
 	defer os.Remove(testFolderPath)
 	defer os.Remove(newSubFolderPath)
@@ -67,7 +67,7 @@ func TestRecursiveCopy(t *testing.T) {
 	basePath := filepath.Dir(cwd)
 	testPackagePath := filepath.Join(basePath, "test", "package")
 	resultPath := filepath.Join(basePath, "test", "result")
-	err := CopyDirectory(testPackagePath, resultPath, true)
+	err := CopyDirectory(testPackagePath, resultPath, true, "")
 	fileWasCopied := PathExists(resultPath)
 
 	if err != nil {
