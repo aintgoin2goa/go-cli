@@ -45,7 +45,7 @@ func Info(c *cli.Context) {
 	}
 
 	var environments []string
-	allEnvironments := []string{"testing", "staging", "production"}
+	allEnvironments := []string{"district", "jubilee", "elizabeth"}
 
 	if environment == "all" {
 		environments = allEnvironments
