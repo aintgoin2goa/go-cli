@@ -2,7 +2,6 @@ package aws
 
 import (
 	"errors"
-	"fmt"
 	"net"
 	"regexp"
 	"time"
@@ -77,12 +76,8 @@ func getIpAsCidr(ipString string) (string, error) {
 	if ip == nil {
 		return "", errors.New("Invalid IP")
 	}
-	var cidrIp string
-	if ip.To4 != nil {
-		cidrIp = ip.String() + "/32"
-	} else {
-		cidrIp = ip.String()
-	}
+
+	cidrIp := ip.String() + "/32"
 
 	return cidrIp, nil
 }
@@ -177,8 +172,6 @@ func RemoveIngressRule(groupId string, region string, protocol string, ipString 
 		GroupId:    aws.String(groupId),
 	}
 
-	fmt.Printf("RemoveIngressRule %+v", input)
-
 	_, revokeError := svc.RevokeSecurityGroupIngress(input)
 
 	if revokeError != nil {
@@ -202,7 +195,6 @@ func CleanOldIngressRules(groupId string, region string) (CleanOldIngressRulesRe
 		}
 		for _, ip := range ips {
 			matches := regex.FindStringSubmatch(ip.Description)
-			fmt.Printf("Description=%s matches=%v\n", ip.Description, matches)
 			if matches != nil && len(matches) == 3 {
 				expiry, parseError := time.Parse(timeFormat, matches[2])
 				if parseError != nil {
@@ -210,7 +202,6 @@ func CleanOldIngressRules(groupId string, region string) (CleanOldIngressRulesRe
 				}
 
 				if time.Now().After(expiry) {
-					fmt.Printf("Rule has expired\n")
 					err := RemoveIngressRule(groupId, region, protocol, ip.Ip)
 					if err != nil {
 						return result, err
