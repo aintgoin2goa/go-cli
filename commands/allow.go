@@ -14,12 +14,14 @@ import (
 var serviceToSecurityGroup = map[string]string{
 	"jenkins":     "sg-56b8c42f",
 	"artifactory": "sg-d9bec2a0",
+	"bastion":     "sg-e2ed5184",
 }
 
 func Allow(c *cli.Context) {
 	clean := c.Bool("clean")
 	jenkins := c.Bool("jenkins")
 	artifactory := c.Bool("artifactory")
+	bastion := c.Bool("bastion")
 	ip := c.String("ip")
 	protocol := c.String("protocol")
 	region := c.String("region")
@@ -54,6 +56,11 @@ func Allow(c *cli.Context) {
 	if artifactory {
 		artifactoryGroup, _ := serviceToSecurityGroup["artifactory"]
 		securityGroups = append(securityGroups, artifactoryGroup)
+	}
+
+	if bastion {
+		bastionGroup, _ := serviceToSecurityGroup["bastion"]
+		securityGroups = append(securityGroups, bastionGroup)
 	}
 
 	for _, group := range securityGroups {

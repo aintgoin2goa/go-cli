@@ -11,7 +11,7 @@ func main() {
 	app := cli.NewApp()
 	app.Name = "tube"
 	app.Usage = "DAZN Tube cli tools"
-	app.Version = "0.4.1"
+	app.Version = "0.4.2"
 
 	app.Commands = []cli.Command{
 		{
@@ -142,6 +142,10 @@ func main() {
 					Usage: "Allow access to artifactory",
 				},
 				cli.BoolFlag{
+					Name:  "bastion, b",
+					Usage: "Allow access to bastion (ssh only)",
+				},
+				cli.BoolFlag{
 					Name:  "clean, c",
 					Usage: "Remove expired ingress rules",
 				},
@@ -151,7 +155,7 @@ func main() {
 					Value: "current",
 				},
 				cli.StringFlag{
-					Name:  "protocol",
+					Name:  "protocol, p",
 					Usage: "Which protocol to allow (http|https|ssh)",
 					Value: "https",
 				},
