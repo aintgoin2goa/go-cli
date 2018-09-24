@@ -36,8 +36,8 @@ func main() {
 				},
 				cli.StringFlag{
 					Name:  "format, f",
-					Value: "yml",
-					Usage: "'yml' or 'json'",
+					Value: "env",
+					Usage: "'env', yml' or 'json'",
 				},
 				cli.StringFlag{
 					Name:  "output, o",

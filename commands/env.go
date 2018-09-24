@@ -50,6 +50,16 @@ func printVars(vars []byte) {
 	fmt.Print(s)
 }
 
+func varsToEnvFile(vars map[string]string) []byte {
+	var lines []string
+	for name, value := range vars {
+		lines = append(lines, name+"=\""+value+"\"")
+	}
+
+	allLines := strings.Join(lines, "\n")
+	return []byte(allLines)
+}
+
 func Env(c *cli.Context) {
 	lambda := c.String("lambda")
 	bucket := c.String("bucket")
@@ -63,12 +73,14 @@ func Env(c *cli.Context) {
 	var formatError error
 	var formattedVariables []byte
 
-	if format == "json" {
+	if format == "env" {
+		formattedVariables = varsToEnvFile(variables)
+	} else if format == "json" {
 		formattedVariables, formatError = json.Marshal(variables)
 	} else if format == "yml" {
 		formattedVariables, formatError = utils.ConvertMapToYaml(variables)
 	} else {
-		log.Fatal("Please provide either 'yml' or 'json' as a format")
+		log.Fatal("Please provide either 'env', 'yml' or 'json' as a format")
 	}
 
 	if formatError != nil {
