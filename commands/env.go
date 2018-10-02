@@ -53,7 +53,7 @@ func printVars(vars []byte) {
 func varsToEnvFile(vars map[string]string) []byte {
 	var lines []string
 	for name, value := range vars {
-		lines = append(lines, name+"=\""+value+"\"")
+		lines = append(lines, name+"="+value)
 	}
 
 	allLines := strings.Join(lines, "\n")
